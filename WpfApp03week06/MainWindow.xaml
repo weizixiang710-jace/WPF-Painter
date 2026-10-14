@@ -8,22 +8,22 @@
         mc:Ignorable="d"
         Title="WPF小畫家ver1" Height="450" Width="800">
     <DockPanel>
-        <Menu DockPanel.Dock="Top" Height="30">
+        <Menu DockPanel.Dock="Top" Height="30" Background="#FF99A790">
             <MenuItem Header="檔案" Height="30" VerticalAlignment="Center" FontSize="16">
                 <MenuItem Header="開啟新畫布" VerticalAlignment="Center" FontSize="16"/>
                 <MenuItem Header="儲存畫布" VerticalAlignment="Center" FontSize="16"/>
             </MenuItem>
         </Menu>
         <ToolBarTray Height="40" Background="LightCyan" DockPanel.Dock="Top">
-            <ToolBar Height="38" Width="600" Background="#FF96F3F3">
-                <Label Content="筆刷色彩" VerticalContentAlignment="Center" FontSize="16" FontWeight="Bold" Margin="10,0,0,0"/>
+            <ToolBar Height="38" Width="600" Background="#FF2E6F6F">
+                <Label Content="筆刷色彩" VerticalContentAlignment="Center" FontSize="16" FontWeight="Bold" Margin="10,0,0,0" Foreground="White"/>
                 <xctk:ColorPicker x:Name="StrokeColorPicker" Width="100" Height="30" DisplayColorAndName="True" SelectedColorChanged="StrokeColorPicker_SelectedColorChanged"/>
-                <Label Content="填滿色彩" VerticalContentAlignment="Center" FontSize="16" FontWeight="Bold" Margin="10,0,0,0"/>
+                <Label Content="填滿色彩" VerticalContentAlignment="Center" FontSize="16" FontWeight="Bold" Margin="10,0,0,0" Foreground="White"/>
                 <xctk:ColorPicker x:Name="FillColorPicker" Width="100" Height="30" DisplayColorAndName="True" SelectedColorChanged="FillColorPicker_SelectedColorChanged"/>
                 <Slider x:Name="ThicknessSlider" Width="120" Minimum="1" Maximum="10" IsSnapToTickEnabled="True" VerticalAlignment="Center" Margin="30,0,0,0" ValueChanged="ThicknessSlider_ValueChanged"/>
-                <Label  FontSize="14" FontWeight="Bold" Margin="20,0,0,0" Content="{Binding Value, ElementName=ThicknessSlider}" Foreground="#FFF70909" VerticalAlignment="Center"/>
+                <Label  FontSize="14" FontWeight="Bold" Margin="20,0,0,0" Content="{Binding Value, ElementName=ThicknessSlider}" Foreground="#FFF5F1F1" VerticalAlignment="Center"/>
             </ToolBar>
-            <ToolBar Height="38" Width="600" Background="#FFA8D684">
+            <ToolBar Height="38" Width="600" Background="#FF40753E">
                 <RadioButton Height="35" Width="35" FontSize="16" Checked="ShapeButton_Checked" FontWeight="Bold" Tag="Line">
                     <Image Source="/line.png" />
                 </RadioButton>
@@ -51,6 +51,6 @@
                 <Label x:Name="ColorLabel" Content="色彩" VerticalAlignment="Center" FontSize="14" Margin="10,0,0,0"/>
             </StatusBarItem>
         </StatusBar>
-        <Canvas Background="#FFF5F5E7"/>
+        <Canvas Background="#FFEDEDED"/>
     </DockPanel>
 </Window>
