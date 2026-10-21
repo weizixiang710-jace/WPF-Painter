@@ -18,7 +18,7 @@ namespace _2026_WpfApp3
 
         Point start;
         Point end;
-        Polyline currentPolyline = null; // 用於紀錄目前正在繪製的折線
+        Polyline currentPolyline = null; // 用於紀錄目前正在畫的隨手畫線條
 
         public MainWindow()
         {
@@ -33,7 +33,7 @@ namespace _2026_WpfApp3
             if (targetShapeButton != null && targetShapeButton.Tag != null)
             {
                 shapeType = targetShapeButton.Tag.ToString();
-                currentPolyline = null; // 切換圖形時重置折線狀態
+                currentPolyline = null;
                 DisplayStatus();
             }
         }
@@ -67,14 +67,31 @@ namespace _2026_WpfApp3
             if (ColorLabel != null)
                 ColorLabel.Content = $"筆刷色彩:{strokeColor}   填充色彩:{fillColor}   筆刷粗細：{strokeThickness}";
             if (ShapeLabel != null)
-                ShapeLabel.Content = $"形狀：{shapeType}";
+                ShapeLabel.Content = $"目前模式：{shapeType}";
         }
 
-        // 1. 按下滑鼠左鍵時的邏輯
+        // 清空畫布按鈕
+        private void ClearButton_Click(object sender, RoutedEventArgs e)
+        {
+            MyCanvas.Children.Clear();
+            currentPolyline = null;
+        }
+
+        // 1. 滑鼠按下左鍵
         private void MyCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             start = e.GetPosition(MyCanvas);
             MyCanvas.CaptureMouse(); // 鎖定滑鼠焦點
+
+            // 橡皮擦模式：點擊到的圖形直接刪除
+            if (shapeType == "Eraser")
+            {
+                if (e.OriginalSource is Shape targetShape)
+                {
+                    MyCanvas.Children.Remove(targetShape);
+                }
+                return;
+            }
 
             if (actionType == "Draw")
             {
@@ -124,30 +141,23 @@ namespace _2026_WpfApp3
                         MyCanvas.Children.Add(ellipse);
                         break;
 
-                    case "Polyline":
-                        // 若尚未開始繪製這條折線，建立新的 Polyline
-                        if (currentPolyline == null)
+                    case "Polyline": // 【隨手畫畫筆】按下滑鼠時建立一條新的 Polyline，並放入起點
+                        currentPolyline = new Polyline
                         {
-                            currentPolyline = new Polyline
-                            {
-                                Stroke = strokeBrush,
-                                StrokeThickness = strokeThickness
-                            };
-                            currentPolyline.Points.Add(start); // 第一點
-                            currentPolyline.Points.Add(start); // 移動中的即時預覽點
-                            MyCanvas.Children.Add(currentPolyline);
-                        }
-                        else
-                        {
-                            // 已經在繪製中，每次點擊加入一個新站點
-                            currentPolyline.Points.Add(start);
-                        }
+                            Stroke = strokeBrush,
+                            StrokeThickness = strokeThickness,
+                            StrokeLineJoin = PenLineJoin.Round, // 讓線條轉折處平滑
+                            StrokeStartLineCap = PenLineCap.Round, // 線條開頭圓角
+                            StrokeEndLineCap = PenLineCap.Round  // 線條結尾圓角
+                        };
+                        currentPolyline.Points.Add(start);
+                        MyCanvas.Children.Add(currentPolyline);
                         break;
                 }
             }
         }
 
-        // 2. 移動滑鼠時的即時拉伸效果
+        // 2. 滑鼠移動
         private void MyCanvas_MouseMove(object sender, MouseEventArgs e)
         {
             end = e.GetPosition(MyCanvas);
@@ -156,72 +166,71 @@ namespace _2026_WpfApp3
                 StatusLabel.Content = $"座標：({(int)end.X}, {(int)end.Y})";
             }
 
-            if (actionType == "Draw")
+            // 橡皮擦模式：拖曳劃過時連續擦除圖形
+            if (shapeType == "Eraser" && e.LeftButton == MouseButtonState.Pressed)
             {
-                // Polyline 無需按住左鍵即可移動預覽
-                if (shapeType == "Polyline" && currentPolyline != null)
+                if (e.OriginalSource is Shape targetShape)
                 {
-                    currentPolyline.Points[currentPolyline.Points.Count - 1] = end;
-                    return;
+                    MyCanvas.Children.Remove(targetShape);
                 }
+                return;
+            }
 
-                // 其他圖形需按住左鍵拖曳
-                if (e.LeftButton == MouseButtonState.Pressed)
+            if (actionType == "Draw" && e.LeftButton == MouseButtonState.Pressed)
+            {
+                switch (shapeType)
                 {
-                    switch (shapeType)
-                    {
-                        case "Line":
-                            var line = MyCanvas.Children.OfType<Line>().LastOrDefault();
-                            if (line != null)
-                            {
-                                line.X2 = end.X;
-                                line.Y2 = end.Y;
-                            }
-                            break;
+                    case "Line":
+                        var line = MyCanvas.Children.OfType<Line>().LastOrDefault();
+                        if (line != null)
+                        {
+                            line.X2 = end.X;
+                            line.Y2 = end.Y;
+                        }
+                        break;
 
-                        case "Rectangle":
-                            var rect = MyCanvas.Children.OfType<Rectangle>().LastOrDefault();
-                            if (rect != null)
-                            {
-                                Canvas.SetLeft(rect, Math.Min(start.X, end.X));
-                                Canvas.SetTop(rect, Math.Min(start.Y, end.Y));
-                                rect.Width = Math.Abs(end.X - start.X);
-                                rect.Height = Math.Abs(end.Y - start.Y);
-                            }
-                            break;
+                    case "Rectangle":
+                        var rect = MyCanvas.Children.OfType<Rectangle>().LastOrDefault();
+                        if (rect != null)
+                        {
+                            Canvas.SetLeft(rect, Math.Min(start.X, end.X));
+                            Canvas.SetTop(rect, Math.Min(start.Y, end.Y));
+                            rect.Width = Math.Abs(end.X - start.X);
+                            rect.Height = Math.Abs(end.Y - start.Y);
+                        }
+                        break;
 
-                        case "Ellipse":
-                            var ellipse = MyCanvas.Children.OfType<Ellipse>().LastOrDefault();
-                            if (ellipse != null)
-                            {
-                                Canvas.SetLeft(ellipse, Math.Min(start.X, end.X));
-                                Canvas.SetTop(ellipse, Math.Min(start.Y, end.Y));
-                                ellipse.Width = Math.Abs(end.X - start.X);
-                                ellipse.Height = Math.Abs(end.Y - start.Y);
-                            }
-                            break;
-                    }
+                    case "Ellipse":
+                        var ellipse = MyCanvas.Children.OfType<Ellipse>().LastOrDefault();
+                        if (ellipse != null)
+                        {
+                            Canvas.SetLeft(ellipse, Math.Min(start.X, end.X));
+                            Canvas.SetTop(ellipse, Math.Min(start.Y, end.Y));
+                            ellipse.Width = Math.Abs(end.X - start.X);
+                            ellipse.Height = Math.Abs(end.Y - start.Y);
+                        }
+                        break;
+
+                    case "Polyline": // 【隨手畫畫筆】按住左鍵移動時，持續將滑鼠軌跡點加入 Polyline
+                        if (currentPolyline != null)
+                        {
+                            currentPolyline.Points.Add(end);
+                        }
+                        break;
                 }
             }
         }
 
-        // 3. 放開滑鼠左鍵（Polyline可透過右鍵結束）
+        // 3. 放開滑鼠左鍵
         private void MyCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (shapeType != "Polyline")
-            {
-                MyCanvas.ReleaseMouseCapture();
-            }
+            currentPolyline = null; // 結束目前筆畫
+            MyCanvas.ReleaseMouseCapture();
         }
 
-        // 滑鼠右鍵點擊：結束 Polyline 的繪製
+        // 右鍵（預留）
         private void MyCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (shapeType == "Polyline" && currentPolyline != null)
-            {
-                currentPolyline = null; // 清除指標，下次點擊將開起新折線
-                MyCanvas.ReleaseMouseCapture();
-            }
         }
     }
 }
