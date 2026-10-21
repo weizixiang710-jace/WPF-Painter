@@ -7,50 +7,67 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="WPF小畫家ver1" Height="450" Width="800">
-    <DockPanel>
-        <Menu DockPanel.Dock="Top" Height="30" Background="#FF99A790">
-            <MenuItem Header="檔案" Height="30" VerticalAlignment="Center" FontSize="16">
-                <MenuItem Header="開啟新畫布" VerticalAlignment="Center" FontSize="16"/>
-                <MenuItem Header="儲存畫布" VerticalAlignment="Center" FontSize="16"/>
-            </MenuItem>
-        </Menu>
-        <ToolBarTray Height="40" Background="LightCyan" DockPanel.Dock="Top">
-            <ToolBar Height="38" Width="600" Background="#FF2E6F6F">
-                <Label Content="筆刷色彩" VerticalContentAlignment="Center" FontSize="16" FontWeight="Bold" Margin="10,0,0,0" Foreground="White"/>
-                <xctk:ColorPicker x:Name="StrokeColorPicker" Width="100" Height="30" DisplayColorAndName="True" SelectedColorChanged="StrokeColorPicker_SelectedColorChanged"/>
-                <Label Content="填滿色彩" VerticalContentAlignment="Center" FontSize="16" FontWeight="Bold" Margin="10,0,0,0" Foreground="White"/>
-                <xctk:ColorPicker x:Name="FillColorPicker" Width="100" Height="30" DisplayColorAndName="True" SelectedColorChanged="FillColorPicker_SelectedColorChanged"/>
-                <Slider x:Name="ThicknessSlider" Width="120" Minimum="1" Maximum="10" IsSnapToTickEnabled="True" VerticalAlignment="Center" Margin="30,0,0,0" ValueChanged="ThicknessSlider_ValueChanged"/>
-                <Label  FontSize="14" FontWeight="Bold" Margin="20,0,0,0" Content="{Binding Value, ElementName=ThicknessSlider}" Foreground="#FFF5F1F1" VerticalAlignment="Center"/>
-            </ToolBar>
-            <ToolBar Height="38" Width="600" Background="#FF40753E">
-                <RadioButton Height="35" Width="35" FontSize="16" Checked="ShapeButton_Checked" FontWeight="Bold" Tag="Line">
-                    <Image Source="/line.png" />
-                </RadioButton>
-                <RadioButton Height="35" Width="35" FontSize="16" Checked="ShapeButton_Checked" FontWeight="Bold" Tag="Rectangle">
-                    <Image Source="/rectangle.png" />
-                </RadioButton>
-                <RadioButton Height="35" Width="35" FontSize="16" Checked="ShapeButton_Checked" FontWeight="Bold" Tag="Ellipse">
-                    <Image Source="/ellipse.png" />
-                </RadioButton>
-                <RadioButton Height="35" Width="35" FontSize="16" Checked="ShapeButton_Checked" FontWeight="Bold" Tag="Polyline">
-                    <Image Source="/polyline.png" />
-                </RadioButton>
-            </ToolBar>
-        </ToolBarTray>
-        <StatusBar Height="35" Background="LightGray" DockPanel.Dock="Bottom">
-            <StatusBarItem Width="200">
-                <Label x:Name="StatusLabel" Content="Ready" VerticalAlignment="Center" FontSize="14" Width="150" Margin="10,0,0,0"/>
-            </StatusBarItem>
-            <Separator/>
-            <StatusBarItem Width="200">
-                <Label x:Name="ShapeLabel" Content="形狀" VerticalAlignment="Center" FontSize="14" Width="150" Margin="10,0,0,0"/>
-            </StatusBarItem>
-            <Separator/>
-            <StatusBarItem>
-                <Label x:Name="ColorLabel" Content="色彩" VerticalAlignment="Center" FontSize="14" Margin="10,0,0,0"/>
-            </StatusBarItem>
-        </StatusBar>
-        <Canvas Background="#FFEDEDED"/>
-    </DockPanel>
+	<DockPanel>
+		<!-- 選單列 -->
+		<Menu DockPanel.Dock="Top" Height="30" Background="#FF99A790">
+			<MenuItem Header="檔案" Height="30" VerticalAlignment="Center" FontSize="16">
+				<MenuItem Header="開啟新畫布" VerticalAlignment="Center" FontSize="16"/>
+				<MenuItem Header="儲存畫布" VerticalAlignment="Center" FontSize="16"/>
+			</MenuItem>
+		</Menu>
+
+		<!-- 工具列 -->
+		<ToolBarTray Height="40" Background="LightCyan" DockPanel.Dock="Top">
+			<!-- 第一條工具列：顏色與粗細設定 -->
+			<ToolBar Height="38" Width="600" Background="#FF2E6F6F">
+				<Label Content="筆刷色彩" VerticalContentAlignment="Center" FontSize="16" FontWeight="Bold" Margin="10,0,0,0" Foreground="White"/>
+				<xctk:ColorPicker x:Name="StrokeColorPicker" Width="100" Height="30" DisplayColorAndName="True" SelectedColorChanged="StrokeColorPicker_SelectedColorChanged"/>
+
+				<Label Content="填滿色彩" VerticalContentAlignment="Center" FontSize="16" FontWeight="Bold" Margin="10,0,0,0" Foreground="White"/>
+				<xctk:ColorPicker x:Name="FillColorPicker" Width="100" Height="30" DisplayColorAndName="True" SelectedColorChanged="FillColorPicker_SelectedColorChanged"/>
+
+				<Slider x:Name="ThicknessSlider" Width="120" Minimum="1" Maximum="10" IsSnapToTickEnabled="True" VerticalAlignment="Center" Margin="30,0,0,0" ValueChanged="ThicknessSlider_ValueChanged"/>
+				<Label FontSize="14" FontWeight="Bold" Margin="20,0,0,0" Content="{Binding Value, ElementName=ThicknessSlider}" Foreground="#FFF5F1F1" VerticalAlignment="Center"/>
+			</ToolBar>
+
+			<!-- 第二條工具列：圖形選擇 -->
+			<ToolBar Height="38" Width="600" Background="#FF40753E">
+				<RadioButton Height="35" Width="35" FontSize="16" GroupName="ShapeGroup" IsChecked="True" Checked="ShapeButton_Checked" FontWeight="Bold" Tag="Line">
+					<Image Source="/line.png" />
+				</RadioButton>
+				<RadioButton Height="35" Width="35" FontSize="16" GroupName="ShapeGroup" Checked="ShapeButton_Checked" FontWeight="Bold" Tag="Rectangle">
+					<Image Source="/rectangle.png" />
+				</RadioButton>
+				<RadioButton Height="35" Width="35" FontSize="16" GroupName="ShapeGroup" Checked="ShapeButton_Checked" FontWeight="Bold" Tag="Ellipse">
+					<Image Source="/ellipse.png" />
+				</RadioButton>
+				<RadioButton Height="35" Width="35" FontSize="16" GroupName="ShapeGroup" Checked="ShapeButton_Checked" FontWeight="Bold" Tag="Polyline">
+					<Image Source="/polyline.png" />
+				</RadioButton>
+			</ToolBar>
+		</ToolBarTray>
+
+		<!-- 狀態列 -->
+		<StatusBar Height="35" Background="LightGray" DockPanel.Dock="Bottom">
+			<StatusBarItem Width="200">
+				<Label x:Name="StatusLabel" Content="Ready" VerticalAlignment="Center" FontSize="14" Width="150" Margin="10,0,0,0"/>
+			</StatusBarItem>
+			<Separator/>
+			<StatusBarItem Width="200">
+				<Label x:Name="ShapeLabel" Content="形狀" VerticalAlignment="Center" FontSize="14" Width="150" Margin="10,0,0,0"/>
+			</StatusBarItem>
+			<Separator/>
+			<StatusBarItem>
+				<Label x:Name="ColorLabel" Content="色彩" VerticalAlignment="Center" FontSize="14" Margin="10,0,0,0"/>
+			</StatusBarItem>
+		</StatusBar>
+
+		<!-- 畫布區域（已補全 x:Name 與相關滑鼠事件） -->
+		<Canvas x:Name="MyCanvas"
+                Background="Transparent"
+                MouseLeftButtonDown="MyCanvas_MouseLeftButtonDown"
+                MouseMove="MyCanvas_MouseMove"
+                MouseLeftButtonUp="MyCanvas_MouseLeftButtonUp"
+                MouseRightButtonDown="MyCanvas_MouseRightButtonDown"/>
+	</DockPanel>
 </Window>
